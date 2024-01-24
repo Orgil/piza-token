@@ -1,12 +1,10 @@
-import { ethers, defender } from 'hardhat';
+import { ethers } from 'hardhat';
 import dotenv from 'dotenv';
 dotenv.config();
 
 async function main() {
-  const pizaToken = await ethers.getContractFactory('PizaToken');
-  const deployment = await defender.deployProxy(pizaToken, { initializer: 'initialize' });
+  const deployment = await ethers.deployContract('PizaToken', ['<contract owner address>', 'mint address']);
   await deployment.waitForDeployment();
-
   console.log(`Contract deployed to ${await deployment.getAddress()}`);
 }
 

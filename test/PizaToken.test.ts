@@ -38,6 +38,20 @@ describe('Piza Token', () => {
       expect(await g.deployment.connect(g.tokenOwner).isBlacklisted(g.recipient)).to.be.true;
     });
 
+    it('only owner add or remove account from blacklist', async () => {
+      await g.deployment.connect(g.contractOwner).addToBlacklist(g.recipient);
+      expect(await g.deployment.connect(g.tokenOwner).isBlacklisted(g.recipient)).to.be.true;
+
+      await g.deployment.connect(g.contractOwner).removeFromBlacklist(g.recipient);
+      expect(await g.deployment.connect(g.tokenOwner).isBlacklisted(g.recipient)).to.be.false;
+    });
+
+    it('revert blacklist actions if not owner', async () => {
+      await expect(g.deployment.connect(g.recipient).addToBlacklist(g.tokenOwner))
+        .to.be.revertedWithCustomError(g.deployment, 'OwnableUnauthorizedAccount')
+        .withArgs(g.recipient);
+    });
+
     it('account is not blacklisted', async () => {
       expect(await g.deployment.connect(g.tokenOwner).isBlacklisted(g.recipient)).to.be.false;
     });

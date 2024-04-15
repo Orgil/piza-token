@@ -75,9 +75,9 @@ contract PizaToken is ERC20, ERC20Burnable, ERC20Pausable, Blacklistable {
   }
 
   /**
-   * @notice Burn token from caller address
-   * @dev Overrides transferFrom function to check blacklist before transfer occurs
-   * @param amount uint256 the amount of tokens to be transferred
+   * @notice Burn tokens from caller address
+   * @dev Overrides burn function to check blacklist before burn occurs
+   * @param amount uint256 the amount of tokens to be burned
    */
   function burn(uint256 amount) public override(ERC20Burnable) notBlacklisted(msg.sender) {
     super._burn(msg.sender, amount);
@@ -85,9 +85,9 @@ contract PizaToken is ERC20, ERC20Burnable, ERC20Pausable, Blacklistable {
 
   /**
    * @notice Burn tokens from allowed address
-   * @dev Overrides transferFrom function to check blacklist before transfer occurs
-   * @param from address The address which you want to send tokens from
-   * @param amount uint256 the amount of tokens to be transferred
+   * @dev Overrides burnFrom function to check blacklist before burn occurs
+   * @param from address The address which you want to burn tokens from
+   * @param amount uint256 the amount of tokens to be burned
    */
   function burnFrom(
     address from,

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity 0.8.20;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 
@@ -37,6 +37,14 @@ abstract contract Blacklistable is Ownable {
   }
 
   /**
+   * @dev Throws if provided address is zero
+   */
+  modifier notZeroAddress(address _account) {
+    require(_account != address(0), 'Zero address not allowed');
+    _;
+  }
+
+  /**
    * @notice Check an address of account is whether blacklisted or not
    * @dev Check an address of account is whether blacklisted or not
    * @param _account The address of the account that going to be checked
@@ -51,7 +59,7 @@ abstract contract Blacklistable is Ownable {
    * @dev Adding to the blacklist functionality is called by only owner of the contract
    * @param _account The address of the account that going to added to blacklist
    */
-  function addToBlacklist(address _account) external onlyOwner {
+  function addToBlacklist(address _account) external notZeroAddress(_account) onlyOwner {
     blacklist[_account] = true;
     /**
      * @dev Triggers AddedToBlacklist event after address is blacklisted
@@ -64,7 +72,7 @@ abstract contract Blacklistable is Ownable {
    * @dev Removing from the blacklist functionality is called by only owner of the contract
    * @param _account The address of the account that going to removed from the blacklist
    */
-  function removeFromBlacklist(address _account) external onlyOwner {
+  function removeFromBlacklist(address _account) external notZeroAddress(_account) onlyOwner {
     blacklist[_account] = false;
     /**
      * @dev Triggers RemovedFromBlacklist event after address is removed from blacklist

@@ -121,4 +121,54 @@ describe('Piza Token', () => {
       ).to.be.revertedWith('Address is blacklisted');
     });
   });
+
+  describe('burn', () => {
+    const burn = 100n;
+
+    it('allow burn', async () => {
+      await expect(g.deployment.connect(g.tokenOwner).burn(burn)).to.changeTokenBalances(
+        g.deployment,
+        [g.tokenOwner],
+        [-burn]
+      );
+    });
+
+    it('reverts burn FROM blacklisted account', async () => {
+      await g.deployment.addToBlacklist(g.tokenOwner);
+
+      await expect(g.deployment.connect(g.tokenOwner).burn(burn)).to.be.revertedWith('Address is blacklisted');
+    });
+  });
+
+  describe('burnFrom', () => {
+    const allowance = 100n;
+
+    beforeEach(async function () {
+      await g.deployment.connect(g.tokenOwner).approve(g.approved, allowance);
+    });
+
+    it('allow burnFrom', async () => {
+      await expect(g.deployment.connect(g.approved).burnFrom(g.tokenOwner, allowance)).to.changeTokenBalances(
+        g.deployment,
+        [g.tokenOwner],
+        [-allowance]
+      );
+    });
+
+    it('reverts burnFrom if caller address is blacklisted', async () => {
+      await g.deployment.addToBlacklist(g.approved);
+
+      await expect(g.deployment.connect(g.approved).burnFrom(g.tokenOwner, allowance)).to.be.revertedWith(
+        'Address is blacklisted'
+      );
+    });
+
+    it('reverts burnFrom if allowed address is blacklisted', async () => {
+      await g.deployment.addToBlacklist(g.tokenOwner);
+
+      await expect(g.deployment.connect(g.approved).burnFrom(g.tokenOwner, allowance)).to.be.revertedWith(
+        'Address is blacklisted'
+      );
+    });
+  });
 });

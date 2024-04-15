@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity 0.8.20;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol';
@@ -72,5 +72,27 @@ contract PizaToken is ERC20, ERC20Burnable, ERC20Pausable, Blacklistable {
     uint amount
   ) public override notBlacklisted(from) notBlacklisted(to) returns (bool) {
     return super.transferFrom(from, to, amount);
+  }
+
+  /**
+   * @notice Burn token from caller address
+   * @dev Overrides transferFrom function to check blacklist before transfer occurs
+   * @param amount uint256 the amount of tokens to be transferred
+   */
+  function burn(uint256 amount) public override(ERC20Burnable) notBlacklisted(msg.sender) {
+    super._burn(msg.sender, amount);
+  }
+
+  /**
+   * @notice Burn tokens from allowed address
+   * @dev Overrides transferFrom function to check blacklist before transfer occurs
+   * @param from address The address which you want to send tokens from
+   * @param amount uint256 the amount of tokens to be transferred
+   */
+  function burnFrom(
+    address from,
+    uint amount
+  ) public override(ERC20Burnable) notBlacklisted(msg.sender) notBlacklisted(from) {
+    super._burn(from, amount);
   }
 }
